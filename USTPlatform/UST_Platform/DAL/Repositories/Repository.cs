@@ -14,9 +14,9 @@ namespace DAL.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public T? GetById(long id)
+        public T GetById(int id)
         {
-            return _dbSet.Find(id);
+            return _dbSet.Find(id)!;
         }
 
         public void Create(T entity)
@@ -25,16 +25,20 @@ namespace DAL.Repositories
             _context.SaveChanges();
         }
 
-        public void Delete(T entity)
+        public void Delete(int id)
         {
-            _dbSet.Remove(entity);
-            _context.SaveChanges();
+            var entity = _dbSet.Find(id);
+
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+                _context.SaveChanges();
+            }
         }
 
-        public void Update(T entity)
+        public IQueryable<T> FindAll()
         {
-            _context.Entry(entity).State = EntityState.Modified;
-            _context.SaveChanges();
+            return _dbSet.AsQueryable();
         }
     }
 }

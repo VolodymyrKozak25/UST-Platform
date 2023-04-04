@@ -13,12 +13,12 @@ namespace UST_Platform.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        //public IActionResult Index()
+        //{
+        //    return View();
+        //}
 
-        public IActionResult Privacy()
+        public IActionResult Cabinet()
         {
             return View();
         }

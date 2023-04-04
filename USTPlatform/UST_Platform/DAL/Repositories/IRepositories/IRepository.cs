@@ -3,12 +3,13 @@
     public interface IRepository<T>
         where T : class
     {
-        T? GetById(long id);
+        T GetById(int id);
+
+        IQueryable<T> FindAll();
 
         void Create(T entity);
 
-        void Delete(T entity);
+        void Delete(int id);
 
-        void Update(T entity);
     }
 }
