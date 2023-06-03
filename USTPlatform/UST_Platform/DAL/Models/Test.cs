@@ -18,5 +18,5 @@ public partial class Test
 
     public virtual ICollection<Studentresult> Studentresults { get; } = new List<Studentresult>();
 
-    public virtual ICollection<Student> Students { get; } = new List<Student>();
+    public virtual ICollection<Group> Groups { get; } = new List<Group>();
 }

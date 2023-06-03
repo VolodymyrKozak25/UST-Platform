@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.Migrations
 {
     [DbContext(typeof(UstdbContext))]
-    [Migration("20230325140015_InitializeDB")]
-    partial class InitializeDB
+    [Migration("20230410132814_CleanedAndAddedIdentityToDB")]
+    partial class CleanedAndAddedIdentityToDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,7 +70,7 @@ namespace DAL.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("course_key");
 
-                    b.Property<int?>("MaxTeachers")
+                    b.Property<int>("MaxTeachers")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("max_teachers")
@@ -105,8 +105,8 @@ namespace DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
                         .HasColumnName("name");
 
                     b.HasKey("GroupId")
@@ -148,28 +148,10 @@ namespace DAL.Migrations
                     b.ToTable("questions", (string)null);
                 });
 
-            modelBuilder.Entity("DAL.Models.Student", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("integer")
-                        .HasColumnName("group_id");
-
-                    b.HasKey("UserId")
-                        .HasName("students_pkey");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("students", (string)null);
-                });
-
             modelBuilder.Entity("DAL.Models.Studentresult", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer")
+                    b.Property<string>("StudentId")
+                        .HasColumnType("text")
                         .HasColumnName("student_id");
 
                     b.Property<int>("TestId")
@@ -188,18 +170,6 @@ namespace DAL.Migrations
                     b.HasIndex("TestId");
 
                     b.ToTable("studentresults", (string)null);
-                });
-
-            modelBuilder.Entity("DAL.Models.Teacher", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("UserId")
-                        .HasName("teachers_pkey");
-
-                    b.ToTable("teachers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Test", b =>
@@ -242,53 +212,83 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("first_name");
+                        .HasColumnType("text");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("last_name");
+                        .HasColumnType("text");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("MiddleName")
                         .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("middle_name");
+                        .HasColumnType("text");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("password");
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
-                    b.Property<string>("UserType")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("user_type");
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
-                    b.HasKey("UserId")
-                        .HasName("users_pkey");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
 
-                    b.HasIndex(new[] { "Email" }, "users_email_key")
-                        .IsUnique();
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
 
-                    b.ToTable("users", (string)null);
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TestId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("TestId");
+
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Enrollment", b =>
@@ -309,40 +309,154 @@ namespace DAL.Migrations
                     b.ToTable("enrollment", (string)null);
                 });
 
-            modelBuilder.Entity("Result", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer")
-                        .HasColumnName("student_id");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("TestAvailability", b =>
+                {
                     b.Property<int>("TestId")
                         .HasColumnType("integer")
                         .HasColumnName("test_id");
 
-                    b.HasKey("StudentId", "TestId")
-                        .HasName("results_id");
-
-                    b.HasIndex("TestId");
-
-                    b.ToTable("results", (string)null);
-                });
-
-            modelBuilder.Entity("Teachercourse", b =>
-                {
-                    b.Property<int>("TeacherId")
+                    b.Property<int>("GroupId")
                         .HasColumnType("integer")
-                        .HasColumnName("teacher_id");
+                        .HasColumnName("group_id");
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("integer")
-                        .HasColumnName("course_id");
+                    b.HasKey("TestId", "GroupId")
+                        .HasName("test_availability_id");
 
-                    b.HasKey("TeacherId", "CourseId")
-                        .HasName("tcourse_id");
+                    b.HasIndex("GroupId");
 
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("teachercourses", (string)null);
+                    b.ToTable("testAvailability", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Answer", b =>
@@ -369,26 +483,6 @@ namespace DAL.Migrations
                     b.Navigation("Test");
                 });
 
-            modelBuilder.Entity("DAL.Models.Student", b =>
-                {
-                    b.HasOne("DAL.Models.Group", "Group")
-                        .WithMany("Students")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("group_student");
-
-                    b.HasOne("DAL.Models.User", "User")
-                        .WithOne("Student")
-                        .HasForeignKey("DAL.Models.Student", "UserId")
-                        .IsRequired()
-                        .HasConstraintName("students_user_id_fkey");
-
-                    b.Navigation("Group");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DAL.Models.Studentresult", b =>
                 {
                     b.HasOne("DAL.Models.Answer", "Answer")
@@ -398,7 +492,7 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasConstraintName("studentresults_answer_id_fkey");
 
-                    b.HasOne("DAL.Models.Student", "Student")
+                    b.HasOne("DAL.Models.User", "Student")
                         .WithMany("Studentresults")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -419,17 +513,6 @@ namespace DAL.Migrations
                     b.Navigation("Test");
                 });
 
-            modelBuilder.Entity("DAL.Models.Teacher", b =>
-                {
-                    b.HasOne("DAL.Models.User", "User")
-                        .WithOne("Teacher")
-                        .HasForeignKey("DAL.Models.Teacher", "UserId")
-                        .IsRequired()
-                        .HasConstraintName("teachers_user_id_fkey");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DAL.Models.Test", b =>
                 {
                     b.HasOne("DAL.Models.Course", "Course")
@@ -440,6 +523,13 @@ namespace DAL.Migrations
                         .HasConstraintName("course_test");
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("DAL.Models.User", b =>
+                {
+                    b.HasOne("DAL.Models.Test", null)
+                        .WithMany("Students")
+                        .HasForeignKey("TestId");
                 });
 
             modelBuilder.Entity("Enrollment", b =>
@@ -459,38 +549,72 @@ namespace DAL.Migrations
                         .HasConstraintName("enrollment_group_id_fkey");
                 });
 
-            modelBuilder.Entity("Result", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("DAL.Models.Student", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("DAL.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("DAL.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("DAL.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TestAvailability", b =>
+                {
+                    b.HasOne("DAL.Models.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("results_student_id_fkey");
+                        .HasConstraintName("testAvailability_group_id_fkey");
 
                     b.HasOne("DAL.Models.Test", null)
                         .WithMany()
                         .HasForeignKey("TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("results_test_id_fkey");
-                });
-
-            modelBuilder.Entity("Teachercourse", b =>
-                {
-                    b.HasOne("DAL.Models.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("teachercourses_course_id_fkey");
-
-                    b.HasOne("DAL.Models.Teacher", null)
-                        .WithMany()
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("teachercourses_teacher_id_fkey");
+                        .HasConstraintName("testAvailability_test_id_fkey");
                 });
 
             modelBuilder.Entity("DAL.Models.Answer", b =>
@@ -503,19 +627,9 @@ namespace DAL.Migrations
                     b.Navigation("Tests");
                 });
 
-            modelBuilder.Entity("DAL.Models.Group", b =>
-                {
-                    b.Navigation("Students");
-                });
-
             modelBuilder.Entity("DAL.Models.Question", b =>
                 {
                     b.Navigation("Answers");
-                });
-
-            modelBuilder.Entity("DAL.Models.Student", b =>
-                {
-                    b.Navigation("Studentresults");
                 });
 
             modelBuilder.Entity("DAL.Models.Test", b =>
@@ -523,13 +637,13 @@ namespace DAL.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Studentresults");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("DAL.Models.User", b =>
                 {
-                    b.Navigation("Student");
-
-                    b.Navigation("Teacher");
+                    b.Navigation("Studentresults");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,40 @@
+﻿@model LoginViewModel
+
+<!-- Main content area -->
+<div class="row justify-content-center">
+    <!-- Login form -->
+    <!-- Added row and justify-content-center classes to center the form horizontally -->
+    <div class="col-md-6 border border-primary rounded-lg p-2 border-2">
+        <!-- Added col-md-6 class to limit the width of the form -->
+        <h2 class="text-center">Admin Login</h2> <!-- Added title in the center top of the form -->
+        <form asp-controller="Admin" asp-action="Login" method="post">
+            <div class="text-danger" asp-validation-summary="All"></div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" placeholder="Enter password" />
+            </div>
+            <!-- Added a row div to contain the buttons -->
+            <div class="row">
+                <!-- Added two col-md-6 divs to split the row into two columns -->
+                <div class="col-md-6">
+                    <!-- Added a btn-group div to group the button -->
+                    <div class="btn-group w-100">
+                        <!-- Added a button with btn btn-primary classes -->
+                        <button type="submit" class="btn btn-success btn-block">Log In</button>
+                    </div>
+                </div>
+                <div class="col-md-6 w-100">
+                    <!-- Added another btn-group div to group the button -->
+                    <div class="btn-group w-100">
+                        <!-- Added another button with btn btn-primary classes -->
+                        <a class="btn btn-success btn-block w-100" href="/Account/Registration">Register</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

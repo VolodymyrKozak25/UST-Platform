@@ -1,0 +1,62 @@
+﻿@model RegistrationViewModel
+
+<!-- Main content area -->
+<div class="row justify-content-center">
+    <!-- Registration form -->
+    <div class="col-md-6 border rounded-lg" style="border:solid 2px black; padding:20px;">
+        <!-- Added col-md-6 class to limit the width of the form -->
+        <h2 class="text-center" style="border-bottom:solid 2px black;">Registration</h2> <!-- Added title in the center top of the form -->
+        <form asp-controller="Account" asp-action="Registration" method="post">
+            @Html.AntiForgeryToken()
+            <div class="text-danger" asp-validation-summary="All"></div>
+            <div class="row">
+                <!-- Added row class to create two columns -->
+                <div class="col-md-6">
+                    <!-- Added col-md-6 class to create left column -->
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="text-center"></label>
+                        <input asp-for="FirstName" class="form-control" id="firstName" name="firstName" class="form-control" placeholder="Enter your first name" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName" class="text-center"></label>
+                        <input asp-for="LastName" class="form-control" id="lastName" name="lastName" class="form-control" placeholder="Enter your last name" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MiddleName" class="text-center"></label>
+                        <input asp-for="MiddleName" class="form-control" id="middleName" name="middleName" class="form-control" placeholder="Enter your middle name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="text-center">Role</label>
+                        <select id="role" name="role" class="form-control" asp-for="SelectedRole" asp-items="@Model.Roles">
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">Register</button> <!-- Added btn-success and btn-block classes to make button green and stretch its length -->
+                </div>
+                <div class="col-md-6">
+                    <!-- Added col-md-6 class to create right column -->
+                    <div class="form-group">
+                        <label asp-for="Password" class="text-center"></label>
+                        <input asp-for="Password" class="form-control" id="password" name="password" class="form-control" placeholder="Enter password" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword" class="text-center"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm password" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="text-center"></label>
+                        <input asp-for="Email" class="form-control" id="email" name="email" class="form-control" placeholder="Enter your email" />
+                    </div>
+                    <div class="form-group">
+                        <label id="groupLabel" for="group" class="text-center">Group</label>
+                        <select id="group" name="group" class="form-control" asp-for="SelectedGroup" asp-items="@Model.Groups">
+                        </select>
+                    </div>
+                    <a href="/Account/Login" class="btn btn-success btn-block">Log In</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src ="~/js/registerChangeField.js" type="text/javascript"></script>
+
+@*<script src ="~/js/setGroupClaim.js" type="text/javascript"></script>*@

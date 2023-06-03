@@ -14,9 +14,9 @@ namespace DAL.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public T GetById(int id)
+        public T? GetById(int id)
         {
-            return _dbSet.Find(id)!;
+            return _dbSet.Find(id);
         }
 
         public void Create(T entity)

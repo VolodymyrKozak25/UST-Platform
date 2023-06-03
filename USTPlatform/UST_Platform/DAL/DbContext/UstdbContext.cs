@@ -1,9 +1,10 @@
 ﻿using DAL.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Context;
 
-public partial class UstdbContext : DbContext
+public partial class UstdbContext : IdentityDbContext<User>
 {
     public UstdbContext()
     {
@@ -14,29 +15,26 @@ public partial class UstdbContext : DbContext
     {
     }
 
+
     public virtual DbSet<Answer> Answers { get; set; }
 
     public virtual DbSet<Course> Courses { get; set; }
 
-    public virtual DbSet<Group> Groups { get; set; }
+    public virtual DbSet<Models.Group> Groups { get; set; }
 
     public virtual DbSet<Question> Questions { get; set; }
 
-    public virtual DbSet<Student> Students { get; set; }
-
     public virtual DbSet<Studentresult> Studentresults { get; set; }
 
-    public virtual DbSet<Teacher> Teachers { get; set; }
-
     public virtual DbSet<Test> Tests { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Host=localhost;Database=USTDB;Username=postgres;Password=1234");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Answer>(entity =>
         {
             entity.HasKey(e => e.AnswerId).HasName("answers_pkey");
@@ -75,7 +73,7 @@ public partial class UstdbContext : DbContext
                 .HasColumnName("name");
         });
 
-        modelBuilder.Entity<Group>(entity =>
+        modelBuilder.Entity<Models.Group>(entity =>
         {
             entity.HasKey(e => e.GroupId).HasName("groups_pkey");
 
@@ -85,7 +83,7 @@ public partial class UstdbContext : DbContext
 
             entity.Property(e => e.GroupId).HasColumnName("group_id");
             entity.Property(e => e.Name)
-                .HasMaxLength(12)
+                .HasMaxLength(24)
                 .HasColumnName("name");
 
             entity.HasMany(d => d.Courses).WithMany(p => p.Groups)
@@ -94,7 +92,7 @@ public partial class UstdbContext : DbContext
                     r => r.HasOne<Course>().WithMany()
                         .HasForeignKey("CourseId")
                         .HasConstraintName("enrollment_course_id_fkey"),
-                    l => l.HasOne<Group>().WithMany()
+                    l => l.HasOne<Models.Group>().WithMany()
                         .HasForeignKey("GroupId")
                         .HasConstraintName("enrollment_group_id_fkey"),
                     j =>
@@ -122,44 +120,6 @@ public partial class UstdbContext : DbContext
                 .HasConstraintName("test_question");
         });
 
-        modelBuilder.Entity<Student>(entity =>
-        {
-            entity.HasKey(e => e.UserId).HasName("students_pkey");
-
-            entity.ToTable("students");
-
-            entity.Property(e => e.UserId)
-                .ValueGeneratedNever()
-                .HasColumnName("user_id");
-            entity.Property(e => e.GroupId).HasColumnName("group_id");
-
-            entity.HasOne(d => d.Group).WithMany(p => p.Students)
-                .HasForeignKey(d => d.GroupId)
-                .HasConstraintName("group_student");
-
-            entity.HasOne(d => d.User).WithOne(p => p.Student)
-                .HasForeignKey<Student>(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("students_user_id_fkey");
-
-            entity.HasMany(d => d.Tests).WithMany(p => p.Students)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Result",
-                    r => r.HasOne<Test>().WithMany()
-                        .HasForeignKey("TestId")
-                        .HasConstraintName("results_test_id_fkey"),
-                    l => l.HasOne<Student>().WithMany()
-                        .HasForeignKey("StudentId")
-                        .HasConstraintName("results_student_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("StudentId", "TestId").HasName("results_id");
-                        j.ToTable("results");
-                        j.IndexerProperty<int>("StudentId").HasColumnName("student_id");
-                        j.IndexerProperty<int>("TestId").HasColumnName("test_id");
-                    });
-        });
-
         modelBuilder.Entity<Studentresult>(entity =>
         {
             entity.HasKey(e => new { e.StudentId, e.TestId, e.AnswerId }).HasName("sresult_id");
@@ -183,39 +143,6 @@ public partial class UstdbContext : DbContext
                 .HasConstraintName("studentresults_test_id_fkey");
         });
 
-        modelBuilder.Entity<Teacher>(entity =>
-        {
-            entity.HasKey(e => e.UserId).HasName("teachers_pkey");
-
-            entity.ToTable("teachers");
-
-            entity.Property(e => e.UserId)
-                .ValueGeneratedNever()
-                .HasColumnName("user_id");
-
-            entity.HasOne(d => d.User).WithOne(p => p.Teacher)
-                .HasForeignKey<Teacher>(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("teachers_user_id_fkey");
-
-            entity.HasMany(d => d.Courses).WithMany(p => p.Teachers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Teachercourse",
-                    r => r.HasOne<Course>().WithMany()
-                        .HasForeignKey("CourseId")
-                        .HasConstraintName("teachercourses_course_id_fkey"),
-                    l => l.HasOne<Teacher>().WithMany()
-                        .HasForeignKey("TeacherId")
-                        .HasConstraintName("teachercourses_teacher_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("TeacherId", "CourseId").HasName("tcourse_id");
-                        j.ToTable("teachercourses");
-                        j.IndexerProperty<int>("TeacherId").HasColumnName("teacher_id");
-                        j.IndexerProperty<int>("CourseId").HasColumnName("course_id");
-                    });
-        });
-
         modelBuilder.Entity<Test>(entity =>
         {
             entity.HasKey(e => e.TestId).HasName("tests_pkey");
@@ -235,29 +162,23 @@ public partial class UstdbContext : DbContext
             entity.HasOne(d => d.Course).WithMany(p => p.Tests)
                 .HasForeignKey(d => d.CourseId)
                 .HasConstraintName("course_test");
-        });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.UserId).HasName("users_pkey");
-
-            entity.ToTable("users");
-
-            entity.HasIndex(e => e.Email, "users_email_key").IsUnique();
-
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.Email).HasColumnName("email");
-            entity.Property(e => e.FirstName)
-                .HasMaxLength(16)
-                .HasColumnName("first_name");
-            entity.Property(e => e.LastName)
-                .HasMaxLength(16)
-                .HasColumnName("last_name");
-            entity.Property(e => e.MiddleName)
-                .HasMaxLength(16)
-                .HasColumnName("middle_name");
-            entity.Property(e => e.Password).HasColumnName("password");
-            entity.Property(e => e.UserType).HasColumnName("user_type");
+            entity.HasMany(d => d.Groups).WithMany(p => p.Tests)
+                .UsingEntity<Dictionary<string, object>>(
+                    "TestAvailability",
+                    r => r.HasOne<Models.Group>().WithMany()
+                        .HasForeignKey("GroupId")
+                        .HasConstraintName("testAvailability_group_id_fkey"),
+                    l => l.HasOne<Test>().WithMany()
+                        .HasForeignKey("TestId")
+                        .HasConstraintName("testAvailability_test_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("TestId", "GroupId").HasName("test_availability_id");
+                        j.ToTable("testAvailability");
+                        j.IndexerProperty<int>("TestId").HasColumnName("test_id");
+                        j.IndexerProperty<int>("GroupId").HasColumnName("group_id");
+                    });
         });
     }
 }

@@ -6,7 +6,7 @@ public partial class Group
 
     public string Name { get; set; } = string.Empty;
 
-    public virtual ICollection<Student> Students { get; } = new List<Student>();
-
     public virtual ICollection<Course> Courses { get; } = new List<Course>();
+
+    public virtual ICollection<Test> Tests { get; } = new List<Test>();
 }

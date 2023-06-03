@@ -1,49 +1,47 @@
-@{
-    ViewData["Title"] = "Cabinet";
-}
+
     <div class="container-fluid p-3 mb-3 px-5">
-        <!-- Added margin bottom -->
         <!-- Smaller header with personal information -->
         <h2 class="text-center">Personal Information</h2>
-        <hr> <!-- Underline below the header -->
+        <hr>
         <!-- Three columns for the form fields -->
         <div class="row">
             <!-- First column with first name, middle name and last name fields -->
             <div class="col-md-4">
                 <!-- First name field -->
                 <div class="form-group mb-4">
-                    <!-- Added margin bottom -->
-                    <label for="first-name">First Name</label>
-                    <input type="text" id="first-name" class="form-control" placeholder="Enter your first name">
+                    <label>First Name</label>
+                <input type="text" id="first-name" class="form-control" value="@ViewBag.User.FirstName" placeholder="Enter your first name">
                 </div>
                 <!-- Middle name field -->
                 <div class="form-group mb-4">
-                    <!-- Added margin bottom -->
                     <label for="middle-name">Middle Name</label>
-                    <input type="text" id="middle-name" class="form-control" placeholder="Enter your middle name (optional)">
+                <input type="text" id="middle-name" class="form-control" value="@ViewBag.User.MiddleName" placeholder="Enter your middle name (optional)">
                 </div>
                 <!-- Last name field -->
                 <div class="form-group mb-4">
-                    <!-- Added margin bottom -->
                     <label for="last-name">Last Name</label>
-                    <input type="text" id="last-name" class="form-control" placeholder="Enter your last name">
+                <input type="text" id="last-name" class="form-control" value="@ViewBag.User.LastName" placeholder="Enter your last name">
                 </div>
             </div>
-            <!-- Second column (empty) -->
-            <div class="col-md-4"></div>
+            @if (User.IsInRole("Student"))
+            {
+                <!-- Second column (for students) -->
+                <div class="col-md-4">
+                    <label for="group">Group</label>
+                    <input type="text" id="group" class="form-control" disabled="disabled" value="@ViewBag.groupClaim.Value">
+                </div>
+            }
             <!-- Third column with password and email fields -->
             <div class="col-md-4">
                 <!-- Password field -->
                 <div class="form-group mb-4">
-                    <!-- Added margin bottom -->
                     <label for="password">Password</label>
-                    <input type="password" id="password" class="form-control" placeholder="Enter your password">
+                    <input type="password" id="password" class="form-control" value="Random Password" disabled="disabled" placeholder="Enter your password">
                 </div>
                 <!-- Email field -->
                 <div class="form-group mb-4">
-                    <!-- Added margin bottom -->
                     <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" placeholder="Enter your email address">
+                    <input type="email" id="email" class="form-control" disabled="disabled" value="@ViewBag.User.Email" placeholder="Enter your email address">
                 </div>
                 <!-- Save changes button -->
                 <button type="button" id="save-changes" class="btn btn-success btn-block mt-4">Save Changes</button>  <!-- Added margin top-->

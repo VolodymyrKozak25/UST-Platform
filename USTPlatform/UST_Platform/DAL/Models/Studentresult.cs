@@ -2,7 +2,7 @@
 
 public partial class Studentresult
 {
-    public int StudentId { get; set; }
+    public string StudentId { get; set; } = string.Empty;
 
     public int TestId { get; set; }
 
@@ -10,7 +10,7 @@ public partial class Studentresult
 
     public virtual Answer Answer { get; set; } = new Answer();
 
-    public virtual Student Student { get; set; } = new Student();
+    public virtual User Student { get; set; } = new User();
 
     public virtual Test Test { get; set; } = new Test();
 }
