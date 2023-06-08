@@ -13,7 +13,7 @@ namespace Presentation.Controllers
         private readonly UserManager<User> _userManager; // Define a field for the user manager service
         private readonly SignInManager<User> _signInManager; // Define a field for the sign in manager service 123456qQ!
         private readonly EmailService _emailService;
-        //private readonly CourseService _courseService;
+        // private readonly CourseService _courseService;
 
         public AccountController(
             UserManager<User> userManager,
